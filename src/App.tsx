@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -9,11 +10,6 @@ import Register from "./pages/Register";
 import Home from "./pages/Home";
 import Voting from "./pages/Voting";
 import NotFound from "./pages/NotFound";
-import AdminDashboard from "./pages/admin/AdminDashboard";
-import AdminTrending from "./pages/admin/AdminTrending";
-import AdminPosts from "./pages/admin/AdminPosts";
-import AdminUsers from "./pages/admin/AdminUsers";
-import ProtectedAdminRoute from "./components/ProtectedAdminRoute";
 
 const queryClient = new QueryClient();
 
@@ -95,57 +91,6 @@ const App = () => {
                 )
               } 
             />
-            
-            {/* Admin Routes */}
-            <Route 
-              path="/admin" 
-              element={
-                isAuthenticated ? (
-                  <ProtectedAdminRoute>
-                    <AdminDashboard onLogout={handleLogout} />
-                  </ProtectedAdminRoute>
-                ) : (
-                  <Navigate to="/login" replace />
-                )
-              } 
-            />
-            <Route 
-              path="/admin/trending" 
-              element={
-                isAuthenticated ? (
-                  <ProtectedAdminRoute>
-                    <AdminTrending onLogout={handleLogout} />
-                  </ProtectedAdminRoute>
-                ) : (
-                  <Navigate to="/login" replace />
-                )
-              } 
-            />
-            <Route 
-              path="/admin/posts" 
-              element={
-                isAuthenticated ? (
-                  <ProtectedAdminRoute>
-                    <AdminPosts onLogout={handleLogout} />
-                  </ProtectedAdminRoute>
-                ) : (
-                  <Navigate to="/login" replace />
-                )
-              } 
-            />
-            <Route 
-              path="/admin/users" 
-              element={
-                isAuthenticated ? (
-                  <ProtectedAdminRoute>
-                    <AdminUsers onLogout={handleLogout} />
-                  </ProtectedAdminRoute>
-                ) : (
-                  <Navigate to="/login" replace />
-                )
-              } 
-            />
-            
             <Route 
               path="/" 
               element={
