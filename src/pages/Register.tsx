@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -6,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Vote, AlertCircle } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 
 interface RegisterProps {
   onRegister: (token: string, user: any) => void;
@@ -97,11 +96,13 @@ const Register = ({ onRegister }: RegisterProps) => {
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1 text-center">
           <div className="flex justify-center mb-4">
-            <div className="p-3 bg-blue-600 rounded-full">
-              <Vote className="h-8 w-8 text-white" />
-            </div>
+            <img 
+              src="/lovable-uploads/193abd5d-557d-4e8f-bc3d-da6971485d5b.png" 
+              alt="ArkTek Logo" 
+              className="h-12 w-12"
+            />
           </div>
-          <CardTitle className="text-2xl font-bold">Join the Platform</CardTitle>
+          <CardTitle className="text-2xl font-bold">Join ArkTek</CardTitle>
           <CardDescription>
             Create your account to engage in political discussions
           </CardDescription>

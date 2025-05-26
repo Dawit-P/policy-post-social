@@ -4,7 +4,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Vote, Menu, X, Home, UserCheck, LogOut } from "lucide-react";
+import { UserCheck, Menu, X, Home, LogOut } from "lucide-react";
 
 interface NavBarProps {
   onLogout: () => void;
@@ -29,10 +29,12 @@ const NavBar = ({ onLogout }: NavBarProps) => {
           {/* Logo */}
           <div className="flex items-center">
             <Link to="/home" className="flex items-center space-x-2">
-              <div className="p-2 bg-blue-600 rounded-lg">
-                <Vote className="h-6 w-6 text-white" />
-              </div>
-              <span className="text-xl font-bold text-gray-900">PolitiConnect</span>
+              <img 
+                src="/lovable-uploads/193abd5d-557d-4e8f-bc3d-da6971485d5b.png" 
+                alt="ArkTek Logo" 
+                className="h-8 w-8"
+              />
+              <span className="text-xl font-bold text-gray-900">ArkTek</span>
             </Link>
           </div>
 

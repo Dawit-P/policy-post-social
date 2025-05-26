@@ -62,7 +62,14 @@ const Login = ({ onLogin }: LoginProps) => {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl text-center">Sign in</CardTitle>
+          <div className="flex justify-center mb-4">
+            <img 
+              src="/lovable-uploads/193abd5d-557d-4e8f-bc3d-da6971485d5b.png" 
+              alt="ArkTek Logo" 
+              className="h-12 w-12"
+            />
+          </div>
+          <CardTitle className="text-2xl text-center">Sign in to ArkTek</CardTitle>
           <CardDescription className="text-center">
             Enter your email and password to access your account
           </CardDescription>
