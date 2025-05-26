@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { useToast } from '@/hooks/use-toast';
+import { Edit, Trash2 } from 'lucide-react';
 
 interface User {
   id: string;
@@ -23,11 +24,21 @@ const UserCard = ({ user, onAction }: UserCardProps) => {
   const { toast } = useToast();
 
   const handleAction = (action: string) => {
+    if (action === 'delete') {
+      if (confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
+        onAction(action, user.id);
+      }
+      return;
+    }
+    
     onAction(action, user.id);
-    toast({
-      title: "Action completed",
-      description: `User ${action} successfully`,
-    });
+    
+    if (action !== 'edit' && action !== 'view-activity') {
+      toast({
+        title: "Action completed",
+        description: `User ${action} successfully`,
+      });
+    }
   };
 
   const getInitials = (name: string) => {
@@ -59,7 +70,17 @@ const UserCard = ({ user, onAction }: UserCardProps) => {
           </div>
         </div>
         
-        <div className="flex space-x-2">
+        <div className="flex flex-wrap gap-2">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => handleAction('edit')}
+            className="flex items-center space-x-1"
+          >
+            <Edit className="h-3 w-3" />
+            <span>Edit</span>
+          </Button>
+          
           {user.role !== 'admin' && (
             <Button
               size="sm"
@@ -69,6 +90,7 @@ const UserCard = ({ user, onAction }: UserCardProps) => {
               Promote to Admin
             </Button>
           )}
+          
           <Button
             size="sm"
             variant={user.status === 'blocked' ? 'default' : 'outline'}
@@ -76,12 +98,23 @@ const UserCard = ({ user, onAction }: UserCardProps) => {
           >
             {user.status === 'blocked' ? 'Unblock' : 'Block'}
           </Button>
+          
           <Button
             size="sm"
             variant="outline"
             onClick={() => handleAction('view-activity')}
           >
             View Activity
+          </Button>
+          
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => handleAction('delete')}
+            className="flex items-center space-x-1 text-red-600 hover:text-red-700"
+          >
+            <Trash2 className="h-3 w-3" />
+            <span>Delete</span>
           </Button>
         </div>
       </CardContent>

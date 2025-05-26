@@ -2,9 +2,13 @@
 import { useState, useEffect } from 'react';
 import AdminSidebar from '@/components/admin/AdminSidebar';
 import UserCard from '@/components/admin/UserCard';
+import AdminModal from '@/components/admin/AdminModal';
+import UserForm from '@/components/admin/UserForm';
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search } from 'lucide-react';
+import { Search, Plus } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 interface User {
   id: string;
@@ -20,11 +24,15 @@ interface UserManagementProps {
 }
 
 const UserManagement = ({ onLogout }: UserManagementProps) => {
+  const { toast } = useToast();
   const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterRole, setFilterRole] = useState('all');
   const [filterStatus, setFilterStatus] = useState('all');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingUser, setEditingUser] = useState<User | undefined>();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     // Mock API call for users
@@ -84,7 +92,22 @@ const UserManagement = ({ onLogout }: UserManagementProps) => {
 
   const handleUserAction = (action: string, userId: string) => {
     console.log(`${action} user ${userId}`);
-    // In real app, make API call here
+    
+    if (action === 'edit') {
+      const userToEdit = users.find(user => user.id === userId);
+      setEditingUser(userToEdit);
+      setIsModalOpen(true);
+      return;
+    }
+
+    if (action === 'delete') {
+      setUsers(prevUsers => prevUsers.filter(user => user.id !== userId));
+      toast({
+        title: "User deleted",
+        description: "User has been successfully deleted",
+      });
+      return;
+    }
     
     // Update local state for demo
     setUsers(prevUsers => 
@@ -97,6 +120,52 @@ const UserManagement = ({ onLogout }: UserManagementProps) => {
         return user;
       })
     );
+
+    toast({
+      title: "Action completed",
+      description: `User ${action} successfully`,
+    });
+  };
+
+  const handleCreateUser = () => {
+    setEditingUser(undefined);
+    setIsModalOpen(true);
+  };
+
+  const handleSubmitUser = async (userData: User) => {
+    setIsSubmitting(true);
+    
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    if (editingUser) {
+      // Update existing user
+      setUsers(prevUsers =>
+        prevUsers.map(user =>
+          user.id === editingUser.id ? { ...userData, id: editingUser.id } : user
+        )
+      );
+      toast({
+        title: "User updated",
+        description: "User has been successfully updated",
+      });
+    } else {
+      // Create new user
+      const newUser = {
+        ...userData,
+        id: Date.now().toString(),
+        joinedAt: new Date().toISOString().split('T')[0]
+      };
+      setUsers(prevUsers => [...prevUsers, newUser]);
+      toast({
+        title: "User created",
+        description: "New user has been successfully created",
+      });
+    }
+    
+    setIsSubmitting(false);
+    setIsModalOpen(false);
+    setEditingUser(undefined);
   };
 
   const filteredUsers = users.filter(user => {
@@ -116,11 +185,17 @@ const UserManagement = ({ onLogout }: UserManagementProps) => {
       
       <div className="flex-1 overflow-auto">
         <div className="p-8">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900">User Management</h1>
-            <p className="text-gray-600 mt-2">
-              Manage platform users and their permissions
-            </p>
+          <div className="flex justify-between items-center mb-8">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">User Management</h1>
+              <p className="text-gray-600 mt-2">
+                Manage platform users and their permissions
+              </p>
+            </div>
+            <Button onClick={handleCreateUser} className="flex items-center space-x-2">
+              <Plus className="h-4 w-4" />
+              <span>Add User</span>
+            </Button>
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4 mb-6">
@@ -182,6 +257,26 @@ const UserManagement = ({ onLogout }: UserManagementProps) => {
           )}
         </div>
       </div>
+
+      <AdminModal
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+          setEditingUser(undefined);
+        }}
+        title={editingUser ? 'Edit User' : 'Create New User'}
+        description={editingUser ? 'Update user information' : 'Add a new user to the platform'}
+      >
+        <UserForm
+          user={editingUser}
+          onSubmit={handleSubmitUser}
+          onCancel={() => {
+            setIsModalOpen(false);
+            setEditingUser(undefined);
+          }}
+          isLoading={isSubmitting}
+        />
+      </AdminModal>
     </div>
   );
 };
