@@ -41,6 +41,15 @@ const App = () => {
     setIsAuthenticated(false);
   };
 
+  const getDefaultRoute = () => {
+    if (!isAuthenticated) return "/login";
+    
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    const isAdmin = user.role === 'admin' || user.email === 'admin@example.com';
+    
+    return isAdmin ? "/admin" : "/home";
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -62,7 +71,7 @@ const App = () => {
                 !isAuthenticated ? (
                   <Login onLogin={handleLogin} />
                 ) : (
-                  <Navigate to="/home" replace />
+                  <Navigate to={getDefaultRoute()} replace />
                 )
               } 
             />
@@ -72,7 +81,7 @@ const App = () => {
                 !isAuthenticated ? (
                   <Register onRegister={handleLogin} />
                 ) : (
-                  <Navigate to="/home" replace />
+                  <Navigate to={getDefaultRoute()} replace />
                 )
               } 
             />
@@ -133,9 +142,7 @@ const App = () => {
             
             <Route 
               path="/" 
-              element={
-                <Navigate to={isAuthenticated ? "/home" : "/login"} replace />
-              } 
+              element={<Navigate to={getDefaultRoute()} replace />} 
             />
             <Route path="*" element={<NotFound />} />
           </Routes>

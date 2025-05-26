@@ -1,182 +1,120 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Vote, AlertCircle } from "lucide-react";
+
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useToast } from '@/hooks/use-toast';
 
 interface LoginProps {
   onLogin: (token: string, user: any) => void;
 }
 
 const Login = ({ onLogin }: LoginProps) => {
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-    rememberMe: false
-  });
-  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [serverError, setServerError] = useState("");
-
-  const validateForm = () => {
-    const newErrors: { [key: string]: string } = {};
-
-    if (!formData.email) {
-      newErrors.email = "Email is required";
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = "Email is invalid";
-    }
-
-    if (!formData.password) {
-      newErrors.password = "Password is required";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+  const { toast } = useToast();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setServerError("");
-
-    if (!validateForm()) return;
-
     setIsLoading(true);
 
-    try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Mock successful login - check if admin
-      const isAdmin = formData.email === 'admin@example.com';
-      const mockUser = {
-        id: 1,
-        name: isAdmin ? "Admin User" : "John Doe",
-        email: formData.email,
-        role: isAdmin ? "admin" : "user",
-        avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face"
-      };
-      
-      onLogin("mock-jwt-token", mockUser);
-    } catch (error) {
-      setServerError("Invalid credentials. Please try again.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    // Simulate API call
+    setTimeout(() => {
+      if (email && password) {
+        const isAdmin = email === 'admin@example.com' || email.includes('admin');
+        const user = {
+          id: '1',
+          name: isAdmin ? 'Admin User' : 'John Doe',
+          email: email,
+          role: isAdmin ? 'admin' : 'user'
+        };
+        
+        const token = 'mock-jwt-token';
+        onLogin(token, user);
+        
+        toast({
+          title: "Login successful",
+          description: `Welcome back, ${user.name}!`,
+        });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, checked } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value
-    }));
-    
-    // Clear error when user starts typing
-    if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: "" }));
-    }
+        // Redirect based on role
+        if (isAdmin) {
+          navigate('/admin');
+        } else {
+          navigate('/home');
+        }
+      } else {
+        toast({
+          title: "Login failed",
+          description: "Please check your credentials and try again.",
+          variant: "destructive",
+        });
+      }
+      setIsLoading(false);
+    }, 1000);
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1 text-center">
-          <div className="flex justify-center mb-4">
-            <div className="p-3 bg-blue-600 rounded-full">
-              <Vote className="h-8 w-8 text-white" />
-            </div>
-          </div>
-          <CardTitle className="text-2xl font-bold">Welcome Back</CardTitle>
-          <CardDescription>
-            Sign in to your political engagement platform
+        <CardHeader className="space-y-1">
+          <CardTitle className="text-2xl text-center">Sign in</CardTitle>
+          <CardDescription className="text-center">
+            Enter your email and password to access your account
           </CardDescription>
         </CardHeader>
-        
-        <form onSubmit={handleSubmit}>
-          <CardContent className="space-y-4">
-            {serverError && (
-              <Alert variant="destructive">
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>{serverError}</AlertDescription>
-              </Alert>
-            )}
-            
-            <div className="bg-blue-50 p-3 rounded-lg text-sm text-blue-700">
-              <p className="font-medium">Demo Accounts:</p>
-              <p>Admin: admin@example.com</p>
-              <p>User: any other email</p>
-              <p>Password: any password</p>
-            </div>
-            
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
-                name="email"
                 type="email"
                 placeholder="Enter your email"
-                value={formData.email}
-                onChange={handleChange}
-                className={errors.email ? "border-red-500" : ""}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
               />
-              {errors.email && (
-                <p className="text-sm text-red-500">{errors.email}</p>
-              )}
             </div>
-            
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
               <Input
                 id="password"
-                name="password"
                 type="password"
                 placeholder="Enter your password"
-                value={formData.password}
-                onChange={handleChange}
-                className={errors.password ? "border-red-500" : ""}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
               />
-              {errors.password && (
-                <p className="text-sm text-red-500">{errors.password}</p>
-              )}
             </div>
-            
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="rememberMe"
-                name="rememberMe"
-                checked={formData.rememberMe}
-                onCheckedChange={(checked) => 
-                  setFormData(prev => ({ ...prev, rememberMe: checked as boolean }))
-                }
-              />
-              <Label htmlFor="rememberMe" className="text-sm">
-                Remember me
-              </Label>
-            </div>
-          </CardContent>
-          
-          <CardFooter className="flex flex-col space-y-4">
             <Button 
               type="submit" 
               className="w-full" 
               disabled={isLoading}
             >
-              {isLoading ? "Signing in..." : "Sign In"}
+              {isLoading ? 'Signing in...' : 'Sign in'}
             </Button>
-            
-            <p className="text-sm text-center text-gray-600">
-              Don't have an account?{" "}
-              <Link to="/register" className="text-blue-600 hover:underline font-medium">
-                Sign up here
+          </form>
+          
+          <div className="mt-6 text-center">
+            <p className="text-sm text-gray-600">
+              Don't have an account?{' '}
+              <Link to="/register" className="font-medium text-blue-600 hover:text-blue-500">
+                Sign up
               </Link>
             </p>
-          </CardFooter>
-        </form>
+          </div>
+
+          <div className="mt-4 p-3 bg-gray-100 rounded-md">
+            <p className="text-xs text-gray-600 mb-2">Demo credentials:</p>
+            <p className="text-xs text-gray-600">User: user@example.com / password</p>
+            <p className="text-xs text-gray-600">Admin: admin@example.com / password</p>
+          </div>
+        </CardContent>
       </Card>
     </div>
   );
