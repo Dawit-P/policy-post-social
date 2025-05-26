@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -52,11 +51,13 @@ const Login = ({ onLogin }: LoginProps) => {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      // Mock successful login
+      // Mock successful login - check if admin
+      const isAdmin = formData.email === 'admin@example.com';
       const mockUser = {
         id: 1,
-        name: "John Doe",
+        name: isAdmin ? "Admin User" : "John Doe",
         email: formData.email,
+        role: isAdmin ? "admin" : "user",
         avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face"
       };
       
@@ -104,6 +105,13 @@ const Login = ({ onLogin }: LoginProps) => {
                 <AlertDescription>{serverError}</AlertDescription>
               </Alert>
             )}
+            
+            <div className="bg-blue-50 p-3 rounded-lg text-sm text-blue-700">
+              <p className="font-medium">Demo Accounts:</p>
+              <p>Admin: admin@example.com</p>
+              <p>User: any other email</p>
+              <p>Password: any password</p>
+            </div>
             
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>

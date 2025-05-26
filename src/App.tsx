@@ -10,6 +10,11 @@ import Register from "./pages/Register";
 import Home from "./pages/Home";
 import Voting from "./pages/Voting";
 import NotFound from "./pages/NotFound";
+import ProtectedAdminRoute from "./components/ProtectedAdminRoute";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import TrendingManagement from "./pages/admin/TrendingManagement";
+import PostModeration from "./pages/admin/PostModeration";
+import UserManagement from "./pages/admin/UserManagement";
 
 const queryClient = new QueryClient();
 
@@ -91,6 +96,41 @@ const App = () => {
                 )
               } 
             />
+            
+            {/* Admin Routes */}
+            <Route 
+              path="/admin" 
+              element={
+                <ProtectedAdminRoute>
+                  <AdminDashboard onLogout={handleLogout} />
+                </ProtectedAdminRoute>
+              } 
+            />
+            <Route 
+              path="/admin/trending" 
+              element={
+                <ProtectedAdminRoute>
+                  <TrendingManagement onLogout={handleLogout} />
+                </ProtectedAdminRoute>
+              } 
+            />
+            <Route 
+              path="/admin/posts" 
+              element={
+                <ProtectedAdminRoute>
+                  <PostModeration onLogout={handleLogout} />
+                </ProtectedAdminRoute>
+              } 
+            />
+            <Route 
+              path="/admin/users" 
+              element={
+                <ProtectedAdminRoute>
+                  <UserManagement onLogout={handleLogout} />
+                </ProtectedAdminRoute>
+              } 
+            />
+            
             <Route 
               path="/" 
               element={
